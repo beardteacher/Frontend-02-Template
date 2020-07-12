@@ -1,1 +1,12 @@
 学习笔记
+1.JS语言通识
+    产生式
+    语言的分类
+    语言的性质
+    语言的设计方式
+2.JS类型 
+    Number
+    String
+    其他类型
+    对象
+https://www.notion.so/76542f842dfc42d1830db9bd45a782f1?v=3cf463ebbed445a9abe5d3954bc80085
