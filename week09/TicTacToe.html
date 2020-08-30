@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #board {
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            grid-template-rows: 100px 100px 100px;
+        }
+        
+        #board .cell {
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 50px;
+            line-height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="board"></div>
+    <script>
+        let pattern = [
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0
+        ]
+        let who = 1
+
+        show(pattern)
+        console.log(bestChoice(pattern, who))
+
+        function show(pattern) {
+            const board = document.querySelector('#board')
+            board.innerHTML = ''
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    const cell = document.createElement('DIV')
+                    cell.classList.add('cell')
+                    cell.addEventListener('click', (e) => {
+                        userDown(e, j, i)
+                    })
+                    cell.innerText =
+                        pattern[i * 3 + j] === 2 ? '❌' :
+                        pattern[i * 3 + j] === 1 ? '⭕️' : ''
+                    board.appendChild(cell)
+                }
+            }
+        }
+
+        function userDown(e, x, y) {
+            pattern[y * 3 + x] = who
+            if (check(pattern, who)) {
+                alert(who === 2 ? '❌ is winner' : '⭕️ is winner')
+            }
+            who = 3 - who
+            show(pattern)
+            computerDown()
+        }
+
+        function computerDown() {
+            let choice = bestChoice(pattern, who)
+            if (choice.point) {
+                pattern[choice.point[1] * 3 + choice.point[0]] = who
+            }
+            if (check(pattern, who)) {
+                alert(who === 2 ? '❌ is winner' : '⭕️ is winner')
+            }
+            who = 3 - who
+            show(pattern)
+        }
+
+        function check(pattern, who) {
+            // 横
+            for (let i = 0; i < 3; i++) {
+                let isWin = true
+                for (let j = 0; j < 3; j++) {
+                    if (pattern[i * 3 + j] !== who) {
+                        isWin = false
+                    }
+                }
+                if (isWin) {
+                    return true
+                }
+            }
+            // 竖
+            for (let i = 0; i < 3; i++) {
+                let isWin = true
+                for (let j = 0; j < 3; j++) {
+                    if (pattern[j * 3 + i] !== who) {
+                        isWin = false
+                    }
+                }
+                if (isWin) {
+                    return true
+                }
+            } {
+                // 斜
+                let isWin = true
+                for (let i = 0; i < 3; i++) {
+                    if (pattern[i * 2 + 2] !== who) {
+                        isWin = false
+                    }
+                }
+                if (isWin) {
+                    return true
+                }
+            } {
+                // 斜
+                let isWin = true
+                for (let i = 0; i < 3; i++) {
+                    if (pattern[i * 4] !== who) {
+                        isWin = false
+                    }
+                }
+                if (isWin) {
+                    return true
+                }
+            }
+        }
+
+        function cloneArr(arr) {
+            return Object.create(arr)
+                // if (Array.isArray(arr)) {
+                //   const res = []
+                //   for (let i = 0; i < arr.length; i++) {
+                //     if (Array.isArray(arr[i])) {
+                //       res.push(cloneArr(arr[i]))
+                //     } else {
+                //       res.push(arr[i])
+                //     }
+                //   }
+                //   return res
+                // } else {
+                //   throw new Error('wrong type')
+                // }
+        }
+
+        function willWin(pattern, who) {
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (pattern[i * 3 + j]) {
+                        continue
+                    } else {
+                        const temp = cloneArr(pattern)
+                        temp[i * 3 + j] = who
+                        if (check(temp, who)) {
+                            return [j, i]
+                        }
+                    }
+                }
+            }
+            return null
+        }
+
+        function bestChoice(pattern, who) {
+            let p = willWin(pattern, who)
+            if (p) {
+                return {
+                    point: p,
+                    result: 1
+                }
+            }
+
+            let result = -2
+            let point = null
+            outer: for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (pattern[i * 3 + j]) {
+                        continue
+                    }
+                    let temp = cloneArr(pattern)
+                    temp[i * 3 + j] = who
+                    let r = bestChoice(temp, 3 - who).result
+
+                    if (-r > result) {
+                        result = -r
+                        point = [j, i]
+                    }
+                    if (result === 1) {
+                        break outer
+                    }
+                }
+            }
+            return {
+                point: point,
+                result: point ? result : 0
+            }
+        }
+    </script>
+</body>
+
+</html>
